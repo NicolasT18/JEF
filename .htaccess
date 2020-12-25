@@ -1,0 +1,4 @@
+RewriteEngine On
+RewriteRule ^hello$ index.html
+RewriteRule ^error$ index.html
+ErrorDocument 404 http://%{HTTP_HOST}/error?%{REQUEST_URI}
