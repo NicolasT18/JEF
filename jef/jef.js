@@ -80,7 +80,7 @@ const jef = {
 			body: paramsString
 		};
 
-		fetch('assets/scripts/' + url + '.php', init)
+		fetch(`pages/${jef.currentPage}/php/${url}.php`, init)
 			.then(res => res.json())
 			.then(json => { if (callback) return callback(json)});
 	}
