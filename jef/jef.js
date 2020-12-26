@@ -1,5 +1,5 @@
-import home from '../../pages/home/script.js';
-import errorLink from '../../pages/404/script.js';
+import home from '../pages/home/script.js';
+import errorLink from '../pages/404/script.js';
 
 const jef = {
 	env: '',
@@ -62,16 +62,18 @@ const jef = {
 			});
 		}
 	},
-	script: (url, params = {}, callback) => {
+	fetch: (url, params = {}, callback) => {
 		const header = new Headers();
 		header.append('Content-Type', 'application/x-www-form-urlencoded');
 		let paramsString = '';
-		let i = 0;
-		Object.keys(params).forEach(name => {
-			console.log(name, params[name]);
-			paramsString+= `${i = 0 ? '&' : ''}${name}=${params[name]}`;
-			i++;
-		});
+		if (params) {
+			let i = 0;
+			Object.keys(params).forEach(name => {
+				console.log(name, params[name]);
+				paramsString += `${i = 0 ? '&' : ''}${name}=${params[name]}`;
+				i++;
+			});
+		}
 		const init = {
 			method: 'POST',
 			headers: header,
@@ -80,7 +82,7 @@ const jef = {
 
 		fetch('assets/scripts/' + url + '.php', init)
 			.then(res => res.json())
-			.then(json => callback(json));
+			.then(json => { if (callback) return callback(json)});
 	}
 }
 
