@@ -3,7 +3,7 @@ import errorLink from '../pages/404/script.js';
 
 const jef = {
 	env: '',
-	js: '../../',
+	js: '../',
 	content: document.getElementById('content'),
 	currentPage: '',
 	path: Array(),
@@ -69,8 +69,7 @@ const jef = {
 		if (params) {
 			let i = 0;
 			Object.keys(params).forEach(name => {
-				console.log(name, params[name]);
-				paramsString += `${i = 0 ? '&' : ''}${name}=${params[name]}`;
+				paramsString += `${i < 0 ? '&' : ''}${name}=${params[name]}`;
 				i++;
 			});
 		}
