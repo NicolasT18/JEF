@@ -56,6 +56,9 @@ const jef = {
 			appLink[i].replaceWith(appLink[i].cloneNode(true));
 			appLink[i].addEventListener('click', e => {
 				e.preventDefault();
+				if (appLink[i] !== e.target) {
+					return appLink[i].click();
+				}
 				const url = e.target.getAttribute("url");
 				window.history.pushState(url, url, '/' + url);
 				jef.root();
