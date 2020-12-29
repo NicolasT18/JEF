@@ -1,9 +1,9 @@
-import home from '../../pages/home/script.js';
-import errorLink from '../../pages/404/script.js';
+import home from '../pages/home/script.js';
+import errorLink from '../pages/404/script.js';
 
 const jef = {
 	env: '',
-	js: '../../',
+	js: '../',
 	content: document.getElementById('content'),
 	currentPage: '',
 	path: Array(),
@@ -65,25 +65,26 @@ const jef = {
 			});
 		}
 	},
-	script: (url, params = {}, callback) => {
+	fetch: (url, params = {}, callback) => {
 		const header = new Headers();
 		header.append('Content-Type', 'application/x-www-form-urlencoded');
 		let paramsString = '';
-		let i = 0;
-		Object.keys(params).forEach(name => {
-			console.log(name, params[name]);
-			paramsString+= `${i = 0 ? '&' : ''}${name}=${params[name]}`;
-			i++;
-		});
+		if (params) {
+			let i = 0;
+			Object.keys(params).forEach(name => {
+				paramsString += `${i < 0 ? '&' : ''}${name}=${params[name]}`;
+				i++;
+			});
+		}
 		const init = {
 			method: 'POST',
 			headers: header,
 			body: paramsString
 		};
 
-		fetch('assets/scripts/' + url + '.php', init)
+		fetch(`pages/${jef.currentPage}/php/${url}.php`, init)
 			.then(res => res.json())
-			.then(json => callback(json));
+			.then(json => { if (callback) return callback(json)});
 	}
 }
 
