@@ -7,6 +7,7 @@ const jef = {
 	content: document.getElementById('content'),
 	currentPage: '',
 	path: Array(),
+	component: Array(),
 	store: {},
 	prod: (prod = false, env = '') => {
 		if (prod) {
@@ -22,6 +23,7 @@ const jef = {
 			} else {
 				jef.currentPage = 'home';
 				jef.initLink();
+				if (jef.loadFunction) jef.loadFunction();
 				home(jef);
 			}
 		} else {
@@ -29,7 +31,7 @@ const jef = {
 			jef.path.forEach(path => {
 				if (jef.env + '/' + path[0] === url) {
 					error = false;
-					jef.loadPage(path[0], path[1]);
+					jef.loadPage(path[0], path[1], path);
 				}
 			});
 			if (error) {
@@ -37,16 +39,27 @@ const jef = {
 			}
 		}
 	},
-	loadPage: (page, script) => {
+	loadPage: (page, script, log = false) => {
 		if (jef.currentPage !== page) {
-			fetch(jef.js + 'pages/' + page + '/index.html')
-				.then(res => res.text())
-				.then(function (html) {
-					jef.currentPage = page;
-					jef.content.innerHTML = html;
-					jef.initLink();
-					if (script) script(jef);
-				});
+			const initPage = () => {
+				jef.currentPage = page;
+				jef.initLink();
+				if (jef.loadFunction) jef.loadFunction();
+				if (script) script(jef);
+			}
+			console.log(log);
+			if (log === false || log.length <= 2) {
+				fetch(jef.js + 'pages/' + page + '/index.html')
+					.then(res => res.text())
+					.then(function (html) {
+						jef.content.innerHTML = html;
+						if (log !== false) { log[2] = html };
+						initPage();
+					});
+			} else {
+				jef.content.innerHTML = log[2];
+				initPage();
+			}
 		}
 	},
 	initLink: () => {
@@ -65,7 +78,22 @@ const jef = {
 			});
 		}
 	},
-	fetch: (url, params = {}, callback) => {
+	comp: (name, js = false, path) => {
+		if (typeof jef.component[name] !== 'undefined') {
+			return jef.component[name];
+		} else {
+			return fetch(path)
+				.then(res => res.text())
+				.then(html => {
+					jef.component[name].htlm = html;
+					if (js !== false) {
+						jef.component[name].js = js;
+					}
+					return html;
+				});
+		}
+	},
+	fetch: (url, params = false, callback, currentPage = true) => {
 		const header = new Headers();
 		header.append('Content-Type', 'application/x-www-form-urlencoded');
 		let paramsString = '';
@@ -82,9 +110,15 @@ const jef = {
 			body: paramsString
 		};
 
-		fetch(`pages/${jef.currentPage}/php/${url}.php`, init)
+		if (currentPage) {
+			const path = `pages/${jef.currentPage}/php/${url}.php`;
+		} else {
+			const path = url;
+		}
+
+		fetch(path, init)
 			.then(res => res.json())
-			.then(json => { if (callback) return callback(json)});
+			.then(json => { if (callback) return callback(json) });
 	}
 }
 
