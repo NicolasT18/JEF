@@ -3,7 +3,6 @@ import errorLink from '../pages/404/script.js';
 
 const jef = {
 	env: '',
-	js: '../',
 	content: document.getElementById('content'),
 	currentPage: '',
 	path: Array(),
@@ -12,7 +11,6 @@ const jef = {
 	prod: (prod = false, env = '') => {
 		if (prod) {
 			jef.env = env;
-			jef.js = '';
 		}
 	},
 	root: (firstLoading = false) => {
@@ -49,7 +47,7 @@ const jef = {
 			}
 			console.log(log);
 			if (log === false || log.length <= 2) {
-				fetch(jef.js + 'pages/' + page + '/index.html')
+				fetch('pages/' + page + '/index.html')
 					.then(res => res.text())
 					.then(function (html) {
 						jef.content.innerHTML = html;
@@ -100,7 +98,7 @@ const jef = {
 		if (params) {
 			let i = 0;
 			Object.keys(params).forEach(name => {
-				paramsString += `${i < 0 ? '&' : ''}${name}=${params[name]}`;
+				paramsString += `${i > 0 ? '&' : ''}${name}=${params[name]}`;
 				i++;
 			});
 		}
@@ -110,10 +108,9 @@ const jef = {
 			body: paramsString
 		};
 
-		if (currentPage) {
-			const path = `pages/${jef.currentPage}/php/${url}.php`;
-		} else {
-			const path = url;
+		let path = `pages/${jef.currentPage}/php/${url}.php`;
+		if (!currentPage) {
+			path = url;
 		}
 
 		fetch(path, init)
